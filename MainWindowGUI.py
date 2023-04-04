@@ -1,18 +1,30 @@
 from PyQt5.QtWidgets import *
 from LoadedSheets import LoadedSheets
+from ShowFrames import ShowFrames
+
 import sys
 
-class mainWindow(QMainWindow):
-    sheets: LoadedSheets
 
-    def __init__(self):
-        super().__init__()
+class MainWindow(QMainWindow):
+    sheetsDir: LoadedSheets
+    tabs: ShowFrames
+    graph: QWidget
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        container = QWidget()
+        self.setCentralWidget(container)
         layout = QGridLayout()
-        self.setLayout(layout)
+        container.setLayout(layout)
 
-        sheets = LoadedSheets()
+        self.sheetsDir = LoadedSheets(self)
+        self.tabs = ShowFrames(self)
+        self.graph = QWidget(self)
 
-        layout.addWidget(sheets, 1, 1, 5, 2)
+        layout.addWidget(self.sheetsDir, 0, 0, 5, 2)
+        layout.addWidget(self.tabs, 0, 2, 3, 7)
+        layout.addWidget(self.graph, 3, 2, 2, 7)
 
         self.show()
 
@@ -21,6 +33,5 @@ class mainWindow(QMainWindow):
 
 if( __name__ == "__main__"):
     app = QApplication(sys.argv)
-    windowExample = mainWindow()
-    windowExample.show()
+    windowExample = MainWindow()
     sys.exit(app.exec_())

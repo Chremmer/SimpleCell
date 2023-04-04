@@ -1,27 +1,45 @@
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.uic.properties import QtGui, QtCore
+
 
 class LoadedSheets(QWidget):
+
     loadButton: QPushButton
     delButton: QPushButton
     newButton: QPushButton
     loadedSheets: QListWidget
 
-    def __init__(self):
-
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         layout = QGridLayout()
         self.setLayout(layout)
 
-        loadButton = QPushButton("Load Sheet")
-        delButton = QPushButton("Remove Selected")
-        newButton = QPushButton("Create New")
+        self.loadButton = QPushButton("Load")
+        self.delButton = QPushButton("Del")
+        self.newButton = QPushButton("New")
 
-        layout.addWidget(loadButton, 0, 0)
-        layout.addWidget(delButton, 0, 1)
-        layout.addWidget(newButton, 0, 2)
+        self.setButtonWidth()
+        self.loadButton.setMinimumWidth(1)
+        self.delButton.setMinimumWidth(1)
+        self.newButton.setMinimumWidth(1)
 
-        loadedSheets = QListWidget()
+        layout.addWidget(self.loadButton, 0, 0)
+        layout.addWidget(self.delButton, 0, 1)
+        layout.addWidget(self.newButton, 0, 2)
 
-        layout.addWidget(loadedSheets, 1, 0, 9, 3)
+        self.loadedSheets = QListWidget()
 
-        self.show()
+        layout.addWidget(self.loadedSheets, 1, 0, 5, 3)
+
+
+    def setButtonWidth(self):
+        width = self.width()
+
+        self.loadButton.setMaximumWidth(width // 3)
+        self.delButton.setMaximumWidth(width // 3)
+        self.newButton.setMaximumWidth(width // 3)
+
+
+    def resizeEvent(self, event):
+        self.setButtonWidth()
