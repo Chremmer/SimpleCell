@@ -1,9 +1,6 @@
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.uic.properties import QtGui, QtCore
-import PyQt5.QtWidgets
 
-import subprocess
+import Dataframe as df
 
 
 class LoadedSheets(QWidget):
@@ -12,42 +9,68 @@ class LoadedSheets(QWidget):
     delButton: QPushButton
     newButton: QPushButton
     loadedSheets: QListWidget
+    path: list
 
     def __init__(self, parent=None):
         super().__init__(parent)
         layout = QGridLayout()
         self.setLayout(layout)
 
+        self.path = list()
         self.loadButton = QPushButton("Load")
         self.delButton = QPushButton("Del")
-        self.newButton = QPushButton("New")
+        self.loadedSheets = QListWidget(self)
 
-        self.loadButton.clicked.connect(self.loadSheet)
+        self.loadButton.clicked.connect(self.loadWorkBook)
+        self.delButton.clicked.connect(self.removeItem)
+        self.loadedSheets.itemDoubleClicked.connect(self.loadSheets)
 
-        self.setButtonWidth()
         self.loadButton.setMinimumWidth(1)
         self.delButton.setMinimumWidth(1)
-        self.newButton.setMinimumWidth(1)
+        self.setButtonWidth()
 
         layout.addWidget(self.loadButton, 0, 0)
         layout.addWidget(self.delButton, 0, 1)
-        layout.addWidget(self.newButton, 0, 2)
 
-        self.loadedSheets = QListWidget()
-
-        layout.addWidget(self.loadedSheets, 1, 0, 5, 3)
+        layout.addWidget(self.loadedSheets, 1, 0, 5, 2)
 
 
     def setButtonWidth(self):
         width = self.width()
 
-        self.loadButton.setMaximumWidth(width // 3)
-        self.delButton.setMaximumWidth(width // 3)
-        self.newButton.setMaximumWidth(width // 3)
+        self.loadButton.setMaximumWidth(width // 2)
+        self.delButton.setMaximumWidth(width // 2)
 
 
     def resizeEvent(self, event):
         self.setButtonWidth()
+
+    def loadSheets(self, fileName : QListWidgetItem):
+        print(self.path[self.loadedSheets.indexFromItem(fileName).row()])
+
+
+    def removeItem(self):
+        selected = self.loadedSheets.selectedItems()
+
+        remove = list()
+        for item in selected:
+            remove.append(self.loadedSheets.indexFromItem(item).row())
+            self.loadedSheets.takeItem(self.loadedSheets.indexFromItem(item).row())
+
+        for num in reversed(remove):
+            self.path.pop(num)
+
+    def loadWorkBook(self):
+        fileDir = self.getOpenFilesAndDirs()
+
+        if(fileDir != None):
+            for file in fileDir:
+                fileType = file[file.rindex('.'):]
+
+                if(fileType == '.xlsx'):
+                    self.path.append(file)
+                    self.loadedSheets.addItem(QListWidgetItem(file[file.rindex('/') + 1:]))
+
 
     """
     This was found at https://stackoverflow.com/questions/64336575/select-a-file-or-a-folder-in-qfiledialog-pyqt5
@@ -95,11 +118,3 @@ class LoadedSheets(QWidget):
 
         dialog.exec_()
         return dialog.selectedFiles()
-
-    def loadSheet(self):
-        fileDir = self.getOpenFilesAndDirs()
-
-        if(fileDir != None):
-            """
-            TODO get call the functions for loading in the directories
-            """
