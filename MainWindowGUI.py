@@ -25,6 +25,8 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget(self)
         self.graph = QWidget(self)
 
+        self.sheetsDir.loadedSheets.itemDoubleClicked.connect(self.loadSheet)
+
         layout.addWidget(self.sheetsDir, 0, 0, 5, 2)
         layout.addWidget(self.tabs, 0, 2, 3, 7)
         layout.addWidget(self.graph, 3, 2, 2, 7)
@@ -36,6 +38,9 @@ class MainWindow(QMainWindow):
         tab.setLayout(QGridLayout())
         tab.layout().addWidget(widget)
         self.tabs.addTab(tab, name)
+
+    def loadSheet(self, file: QListWidgetItem):
+        print(self.sheetsDir.getPath(file))
 
 
 if __name__ == "__main__":

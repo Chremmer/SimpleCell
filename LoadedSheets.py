@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QChildEvent, QEvent
 from PyQt5.QtWidgets import *
 
 import Dataframe as df
@@ -23,7 +24,6 @@ class LoadedSheets(QWidget):
 
         self.loadButton.clicked.connect(self.loadWorkBook)
         self.delButton.clicked.connect(self.removeItem)
-        self.loadedSheets.itemDoubleClicked.connect(self.loadSheets)
 
         self.loadButton.setMinimumWidth(1)
         self.delButton.setMinimumWidth(1)
@@ -46,8 +46,7 @@ class LoadedSheets(QWidget):
         self.setButtonWidth()
 
     def loadSheets(self, fileName : QListWidgetItem):
-        print(self.path[self.loadedSheets.indexFromItem(fileName).row()])
-
+        pass
 
     def removeItem(self):
         selected = self.loadedSheets.selectedItems()
@@ -59,6 +58,9 @@ class LoadedSheets(QWidget):
 
         for num in reversed(remove):
             self.path.pop(num)
+
+    def getPath(self, listItem: QListWidgetItem) -> str:
+        return self.path[self.loadedSheets.indexFromItem(listItem).row()]
 
     def loadWorkBook(self):
         fileDir = self.getOpenFilesAndDirs()
