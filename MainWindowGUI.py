@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
     sheetsDir: LoadedSheets
     tabs: QTabWidget
     graph: QWidget
+    data: list[Dataframe]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -24,6 +25,7 @@ class MainWindow(QMainWindow):
         self.sheetsDir = LoadedSheets(self)
         self.tabs = QTabWidget(self)
         self.graph = QWidget(self)
+        self.data = []
 
         self.sheetsDir.loadedSheets.itemDoubleClicked.connect(self.loadSheet)
 
@@ -40,21 +42,14 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(tab, name)
 
     def loadSheet(self, file: QListWidgetItem):
-        print(self.sheetsDir.getPath(file))
+        excel_sheet = self.sheetsDir.getPath(file)
+        df = Dataframe.excel_to_dataframe(excel_sheet)
+        self.data.append(df)
+        df_model = Dataframe.create_dataframe_model(df)
+        self.add_tab(df_model, excel_sheet)
 
 
 if __name__ == "__main__":
-    df = pandas.DataFrame({'a': ['Mary', 'Jim', 'John'],
-                       'b': [100, 200, 300],
-                       'c': ['a', 'b', 'c']})
-
     app = QApplication(sys.argv)
     windowExample = MainWindow()
-
-    df_model = Dataframe.create_dataframe_model(df)
-    df_model2 = df_model
-
-    windowExample.add_tab(df_model, "Tab 1")
-    windowExample.add_tab(df_model2, "Tab 2")
-
     sys.exit(app.exec_())

@@ -3,14 +3,9 @@ import os
 
 
 def main():
-    sample_file = os.getcwd() + "\\excel_sample\\sample_1.xlsx"
+    num_files = len(os.listdir(os.getcwd() + "\\excel_sample\\"))
 
-    data = Dataframe.excel_to_dataframe(sample_file)
-
-    if data is None:
-        data = Dataframe.empty_df()
-
-    print(data)
+    print(num_files)
 
 
 main()
