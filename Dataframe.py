@@ -1,4 +1,7 @@
 import pandas as pd
+from PyQt5.QtWidgets import QTableView
+from PandasModel import PandasModel
+from pandas import DataFrame as DataframeObject
 
 
 def excel_to_dataframe(file):
@@ -20,6 +23,14 @@ def dataframe_to_excel(data, file, index=False):
 
     except Exception as e:
         print("Dataframe to excel error: " + str(e))
+
+
+def create_dataframe_model(df: DataframeObject):
+    model = PandasModel(df)
+    view = QTableView()
+    view.setModel(model)
+
+    return view
 
 
 def empty_df():

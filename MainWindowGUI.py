@@ -1,13 +1,16 @@
+import pandas
+from PyQt5.QtCore import QAbstractTableModel
 from PyQt5.QtWidgets import *
-from LoadedSheets import LoadedSheets
-from ShowFrames import ShowFrames
 
+import Dataframe
+from LoadedSheets import LoadedSheets
+from PandasModel import PandasModel
 import sys
 
 
 class MainWindow(QMainWindow):
     sheetsDir: LoadedSheets
-    tabs: ShowFrames
+    tabs: QTabWidget
     graph: QWidget
 
     def __init__(self, parent=None):
@@ -19,7 +22,7 @@ class MainWindow(QMainWindow):
         container.setLayout(layout)
 
         self.sheetsDir = LoadedSheets(self)
-        self.tabs = ShowFrames(self)
+        self.tabs = QTabWidget(self)
         self.graph = QWidget(self)
 
         layout.addWidget(self.sheetsDir, 0, 0, 5, 2)
@@ -28,10 +31,25 @@ class MainWindow(QMainWindow):
 
         self.show()
 
+    def add_tab(self, widget: QWidget, name):
+        tab = QWidget()
+        tab.setLayout(QGridLayout())
+        tab.layout().addWidget(widget)
+        self.tabs.addTab(tab, name)
 
 
+if __name__ == "__main__":
+    df = pandas.DataFrame({'a': ['Mary', 'Jim', 'John'],
+                       'b': [100, 200, 300],
+                       'c': ['a', 'b', 'c']})
 
-if( __name__ == "__main__"):
     app = QApplication(sys.argv)
     windowExample = MainWindow()
+
+    df_model = Dataframe.create_dataframe_model(df)
+    df_model2 = df_model
+
+    windowExample.add_tab(df_model, "Tab 1")
+    windowExample.add_tab(df_model2, "Tab 2")
+
     sys.exit(app.exec_())
