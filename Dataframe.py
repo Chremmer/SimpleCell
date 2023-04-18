@@ -25,12 +25,12 @@ def dataframe_to_excel(data, file, index=False):
         print("Dataframe to excel error: " + str(e))
 
 
-def create_dataframe_model(df: DataframeObject):
-    model = PandasModel(df)
-    view = QTableView()
-    view.setModel(model)
 
-    return view
+
+
+def test():
+    print("thing")
+
 
 
 def empty_df():

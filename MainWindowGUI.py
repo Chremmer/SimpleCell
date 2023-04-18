@@ -53,9 +53,12 @@ class MainWindow(QMainWindow):
         model = PandasModel(df)
         view = QTableView()
         view.setModel(model)
+        view.model().dataChanged.connect(self.changedData)
 
         return view
 
+    def changedData(self):
+        print("yay")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -19,11 +19,21 @@ class PandasModel(QAbstractTableModel):
                 return str(self._data.iloc[index.row(), index.column()])
         return None
 
-    def flags(self, index):  # Qt was imported from PyQt4.QtCore
-        return Qt.ItemIsEditable | Qt.ItemIsEnabled | \
-            Qt.ItemIsSelectable
+    def flags(self, index):
+        if not index.isValid():
+            return Qt.ItemIsEnabled
+
+        return super().flags(index) | Qt.ItemIsEditable  # add editable flag.
 
     def headerData(self, col, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self._data.columns[col]
         return None
+
+    def setData(self, index, value, role):
+        if role == Qt.EditRole:
+            # Set the value into the frame.
+            self._data.iloc[index.row(), index.column()] = value
+            return True
+
+        return False
