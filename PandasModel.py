@@ -34,6 +34,8 @@ class PandasModel(QAbstractTableModel):
         if role == Qt.EditRole:
             # Set the value into the frame.
             self._data.iloc[index.row(), index.column()] = value
+
+            self.dataChanged.emit(index, index)
             return True
 
         return False

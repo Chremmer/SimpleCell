@@ -1,5 +1,5 @@
 import pandas
-from PyQt5.QtCore import QAbstractTableModel
+from PyQt5.QtCore import QAbstractTableModel, Qt
 from PyQt5.QtWidgets import *
 from pandas import DataFrame as DataframeObject
 
@@ -13,7 +13,7 @@ class MainWindow(QMainWindow):
     sheetsDir: LoadedSheets
     tabs: QTabWidget
     graph: QWidget
-    data: list[Dataframe]
+    data: list[DataframeObject]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -51,14 +51,16 @@ class MainWindow(QMainWindow):
 
     def create_dataframe_model(self, df: DataframeObject):
         model = PandasModel(df)
+        self.data.append(df)
         view = QTableView()
         view.setModel(model)
         view.model().dataChanged.connect(self.changedData)
 
         return view
 
-    def changedData(self):
-        print("yay")
+    def changedData(self, item):
+        print(item.row())
+        print(item.column())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
