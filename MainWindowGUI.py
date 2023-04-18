@@ -1,6 +1,7 @@
 import pandas
 from PyQt5.QtCore import QAbstractTableModel
 from PyQt5.QtWidgets import *
+from pandas import DataFrame as DataframeObject
 
 import Dataframe
 from LoadedSheets import LoadedSheets
@@ -45,8 +46,15 @@ class MainWindow(QMainWindow):
         excel_sheet = self.sheetsDir.getPath(file)
         df = Dataframe.excel_to_dataframe(excel_sheet)
         self.data.append(df)
-        df_model = Dataframe.create_dataframe_model(df)
+        df_model = self.create_dataframe_model(df)
         self.add_tab(df_model, excel_sheet)
+
+    def create_dataframe_model(self, df: DataframeObject):
+        model = PandasModel(df)
+        view = QTableView()
+        view.setModel(model)
+
+        return view
 
 
 if __name__ == "__main__":
