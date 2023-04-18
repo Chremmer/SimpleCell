@@ -21,25 +21,29 @@ class LoadedSheets(QWidget):
         self.loadButton = QPushButton("Load")
         self.delButton = QPushButton("Del")
         self.loadedSheets = QListWidget(self)
+        self.saveButton = QPushButton("Save")
 
         self.loadButton.clicked.connect(self.loadWorkBook)
         self.delButton.clicked.connect(self.removeItem)
 
         self.loadButton.setMinimumWidth(1)
         self.delButton.setMinimumWidth(1)
+        self.saveButton.setMinimumWidth(1)
         self.setButtonWidth()
 
         layout.addWidget(self.loadButton, 0, 0)
         layout.addWidget(self.delButton, 0, 1)
+        layout.addWidget(self.saveButton, 0, 2)
 
-        layout.addWidget(self.loadedSheets, 1, 0, 5, 2)
+        layout.addWidget(self.loadedSheets, 1, 0, 5, 3)
 
 
     def setButtonWidth(self):
         width = self.width()
 
-        self.loadButton.setMaximumWidth(width // 2)
-        self.delButton.setMaximumWidth(width // 2)
+        self.loadButton.setMaximumWidth(width // 3)
+        self.delButton.setMaximumWidth(width // 3)
+        self.saveButton.setMaximumWidth(width // 3)
 
 
     def resizeEvent(self, event):

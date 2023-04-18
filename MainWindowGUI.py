@@ -29,6 +29,7 @@ class MainWindow(QMainWindow):
         self.data = []
 
         self.sheetsDir.loadedSheets.itemDoubleClicked.connect(self.loadSheet)
+        self.sheetsDir.saveButton.clicked.connect(self.save)
 
         layout.addWidget(self.sheetsDir, 0, 0, 5, 2)
         layout.addWidget(self.tabs, 0, 2, 3, 7)
@@ -61,6 +62,9 @@ class MainWindow(QMainWindow):
     def changedData(self, item):
         print(item.row())
         print(item.column())
+
+    def save(self):
+        pass
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
