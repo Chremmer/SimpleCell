@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 from PyQt5.QtCore import QAbstractTableModel, Qt
 from PyQt5.QtWidgets import *
 from pandas import DataFrame as DataframeObject
@@ -35,6 +35,8 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.tabs, 0, 2, 3, 7)
         layout.addWidget(self.graph, 3, 2, 2, 7)
 
+        self.tabs.tabBarDoubleClicked.connect(self.del_tab)
+
         self.show()
 
     def add_tab(self, widget: QWidget, name):
@@ -42,6 +44,13 @@ class MainWindow(QMainWindow):
         tab.setLayout(QGridLayout())
         tab.layout().addWidget(widget)
         self.tabs.addTab(tab, name)
+
+    def del_tab(self):
+        if(len(self.data) > 0):
+            tab_index = self.tabs.currentIndex()
+            self.tabs.removeTab(tab_index)
+
+            self.data.pop(tab_index)
 
     def loadSheet(self, file: QListWidgetItem):
         excel_sheet = self.sheetsDir.getPath(file)
@@ -52,7 +61,6 @@ class MainWindow(QMainWindow):
 
     def create_dataframe_model(self, df: DataframeObject):
         model = PandasModel(df)
-        self.data.append(df)
         view = QTableView()
         view.setModel(model)
         view.model().dataChanged.connect(self.changedData)
@@ -64,7 +72,10 @@ class MainWindow(QMainWindow):
         print(item.column())
 
     def save(self):
-        pass
+        tab_index = self.tabs.currentIndex()
+        tab_title = self.tabs.tabText(tab_index)
+        print(tab_title)
+        self.data[tab_index].to_excel(tab_title, index=False)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
