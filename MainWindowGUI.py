@@ -53,11 +53,14 @@ class MainWindow(QMainWindow):
             self.data.pop(tab_index)
 
     def loadSheet(self, file: QListWidgetItem):
-        excel_sheet = self.sheetsDir.getPath(file)
-        df = Dataframe.excel_to_dataframe(excel_sheet)
+        excel_sheet_path = self.sheetsDir.getPath(file)
+        sheet = excel_sheet_path[excel_sheet_path.rfind("-") + 1:]
+        path = excel_sheet_path[:excel_sheet_path.rfind("-")]
+
+        df = Dataframe.excel_to_dataframe(path, sheet)
         self.data.append(df)
         df_model = self.create_dataframe_model(df)
-        self.add_tab(df_model, excel_sheet)
+        self.add_tab(df_model, excel_sheet_path)
 
     def create_dataframe_model(self, df: DataframeObject):
         model = PandasModel(df)

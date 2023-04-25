@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QChildEvent, QEvent
 from PyQt5.QtWidgets import *
 
-import Dataframe as df
+import openpyxl
 
 
 class LoadedSheets(QWidget):
@@ -74,8 +74,12 @@ class LoadedSheets(QWidget):
                 fileType = file[file.rindex('.'):]
 
                 if(fileType == '.xlsx'):
-                    self.path.append(file)
-                    self.loadedSheets.addItem(QListWidgetItem(file[file.rindex('/') + 1:]))
+                    workbook = openpyxl.load_workbook(filename=file)
+                    sheets = workbook.sheetnames
+
+                    for sheet in sheets:
+                        self.path.append(file + "-" + sheet)
+                        self.loadedSheets.addItem(QListWidgetItem(file[file.rindex('/') + 1:] + " - " + sheet))
 
 
     """

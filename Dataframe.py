@@ -4,12 +4,12 @@ from PandasModel import PandasModel
 from pandas import DataFrame as DataframeObject
 
 
-def excel_to_dataframe(file):
+def excel_to_dataframe(file, sheetName):
 
     data = None
 
     try:
-        data = pd.read_excel(file)
+        data = pd.read_excel(file, sheetName)
 
     except Exception as e:
         print("Excel to dataframe error: " + str(e))
