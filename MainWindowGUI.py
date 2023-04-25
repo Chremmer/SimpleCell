@@ -2,8 +2,9 @@ import pandas as pd
 from PyQt5.QtCore import QAbstractTableModel, Qt
 from PyQt5.QtWidgets import *
 from pandas import DataFrame as DataframeObject
-
+import matplotlib.pyplot as plt
 import Dataframe
+from GraphModel import GraphWindow
 from LoadedSheets import LoadedSheets
 from PandasModel import PandasModel
 import sys
@@ -12,7 +13,6 @@ import sys
 class MainWindow(QMainWindow):
     sheetsDir: LoadedSheets
     tabs: QTabWidget
-    graph: QWidget
     data: list[DataframeObject]
 
     def __init__(self, parent=None):
@@ -62,6 +62,8 @@ class MainWindow(QMainWindow):
         df_model = self.create_dataframe_model(df)
         self.add_tab(df_model, file.text())
 
+        self.create_graph(df, "Precipitation")
+
     def create_dataframe_model(self, df: DataframeObject):
         model = PandasModel(df)
         view = QTableView()
@@ -69,6 +71,9 @@ class MainWindow(QMainWindow):
         view.model().dataChanged.connect(self.changedData)
 
         return view
+
+    def create_graph(self, df: DataframeObject, col):
+        GraphWindow()
 
     def changedData(self, item):
         print(item.row())
