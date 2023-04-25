@@ -3,8 +3,10 @@ from PyQt5.QtWidgets import QMainWindow, QWidget
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
+from PyQt5.QtWidgets import *
 
-class GraphWindow(QWindow):
+
+class GraphWindow(QWidget):
 
     def __init__(self, *args, **kwargs):
         super(GraphWindow, self).__init__(*args, **kwargs)
@@ -14,7 +16,10 @@ class GraphWindow(QWindow):
         sc = MplCanvas(self, width=5, height=4, dpi=100)
         sc.axes.plot([0,1,2,3,4], [10,1,20,3,40])
 
-        self.show()
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        layout.addWidget(sc)
 
 
 class MplCanvas(FigureCanvasQTAgg):

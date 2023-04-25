@@ -13,6 +13,7 @@ import sys
 class MainWindow(QMainWindow):
     sheetsDir: LoadedSheets
     tabs: QTabWidget
+    graph: QWidget
     data: list[DataframeObject]
 
     def __init__(self, parent=None):
@@ -73,7 +74,9 @@ class MainWindow(QMainWindow):
         return view
 
     def create_graph(self, df: DataframeObject, col):
-        GraphWindow()
+        self.graph = GraphWindow()
+
+        self.graph.show()
 
     def changedData(self, item):
         print(item.row())
@@ -83,7 +86,7 @@ class MainWindow(QMainWindow):
         tab_index = self.tabs.currentIndex()
         tab_title = self.tabs.tabText(tab_index)
         path = self.sheetsDir.getPath(fileName=tab_title)
-        self.data[tab_index].to_excel(path[:path.rfind(" - ")], tab_title[tab_title.rfind(" - ") + 1:], index=False)
+        self.data[tab_index].to_excel(path[:path.rfind(" - ")], index=False)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
