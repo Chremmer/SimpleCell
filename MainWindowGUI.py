@@ -1,6 +1,8 @@
+import pandas
 import pandas as pd
 from PyQt5.QtCore import QAbstractTableModel, Qt
 from PyQt5.QtWidgets import *
+from openpyxl.utils import dataframe
 from pandas import DataFrame as DataframeObject
 import matplotlib.pyplot as plt
 import Dataframe
@@ -8,6 +10,8 @@ from GraphModel import GraphWindow
 from LoadedSheets import LoadedSheets
 from PandasModel import PandasModel
 import sys
+
+from openpyxl import *
 
 
 class MainWindow(QMainWindow):
@@ -86,7 +90,22 @@ class MainWindow(QMainWindow):
         tab_index = self.tabs.currentIndex()
         tab_title = self.tabs.tabText(tab_index)
         path = self.sheetsDir.getPath(fileName=tab_title)
-        self.data[tab_index].to_excel(path[:path.rfind(" - ")], index=False)
+        filename = path[:path.rfind(" - ")]
+        sheet = tab_title[tab_title.rfind(" - ") + 3:]
+
+        with pd.ExcelWriter(filename, engine='openpyxl', mode='a') as writer:
+            workBook = writer.book
+            try:
+                workBook.remove(workBook[sheet])
+            except:
+                print("Worksheet does not exist")
+            finally:
+                self.data[tab_index].to_excel(writer, sheet_name=sheet, index=False)
+                writer.save()
+
+
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
