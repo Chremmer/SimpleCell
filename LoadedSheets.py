@@ -63,8 +63,16 @@ class LoadedSheets(QWidget):
         for num in reversed(remove):
             self.path.pop(num)
 
-    def getPath(self, listItem: QListWidgetItem) -> str:
-        return self.path[self.loadedSheets.indexFromItem(listItem).row()]
+    def getPath(self, listItem: QListWidgetItem = None, fileName: str = None) -> str:
+        if(listItem != None):
+            return self.path[self.loadedSheets.indexFromItem(listItem).row()]
+
+        for check in self.path:
+            if(fileName == str(check)[str(check).rfind("/") + 1:]):
+                return str(check)
+
+        return ""
+
 
     def loadWorkBook(self):
         fileDir = self.getOpenFilesAndDirs()
@@ -78,7 +86,7 @@ class LoadedSheets(QWidget):
                     sheets = workbook.sheetnames
 
                     for sheet in sheets:
-                        self.path.append(file + "-" + sheet)
+                        self.path.append(file + " - " + sheet)
                         self.loadedSheets.addItem(QListWidgetItem(file[file.rindex('/') + 1:] + " - " + sheet))
 
 
