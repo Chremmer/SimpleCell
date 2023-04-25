@@ -1,10 +1,13 @@
 import pandas as pd
 from PyQt5.QtCore import QAbstractTableModel, Qt
 from PyQt5.QtWidgets import *
+from PyQt5.uic.properties import QtWidgets
+from matplotlib.backends.backend_template import FigureCanvas
+from matplotlib.figure import Figure
 from pandas import DataFrame as DataframeObject
 import matplotlib.pyplot as plt
 import Dataframe
-from GraphModel import GraphWindow
+from GraphModel import MplCanvas
 from LoadedSheets import LoadedSheets
 from PandasModel import PandasModel
 import sys
@@ -14,6 +17,7 @@ class MainWindow(QMainWindow):
     sheetsDir: LoadedSheets
     tabs: QTabWidget
     data: list[DataframeObject]
+    graph_window: MplCanvas
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -73,7 +77,13 @@ class MainWindow(QMainWindow):
         return view
 
     def create_graph(self, df: DataframeObject, col):
-        GraphWindow()
+        sc = MplCanvas(self, width=5, height=4, dpi=100)
+        sc.axes.plot(df[col])
+        self.graph = QWidget()
+        layout = QVBoxLayout()
+        layout.addWidget(sc)
+        self.graph.setLayout(layout)
+        self.graph.show()
 
     def changedData(self, item):
         print(item.row())
