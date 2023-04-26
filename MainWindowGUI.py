@@ -6,7 +6,8 @@ from openpyxl.utils import dataframe
 from pandas import DataFrame as DataframeObject
 import matplotlib.pyplot as plt
 import Dataframe
-from GraphModel import GraphWindow
+from GraphMenu import GraphMenu
+from GraphModel import GraphModel
 from LoadedSheets import LoadedSheets
 from PandasModel import PandasModel
 import sys
@@ -17,8 +18,9 @@ from openpyxl import *
 class MainWindow(QMainWindow):
     sheetsDir: LoadedSheets
     tabs: QTabWidget
-    graph: QWidget
+    graph: GraphModel
     data: list[DataframeObject]
+    menu: list[GraphMenu]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -30,15 +32,14 @@ class MainWindow(QMainWindow):
 
         self.sheetsDir = LoadedSheets(self)
         self.tabs = QTabWidget(self)
-        self.graph = QWidget(self)
         self.data = []
+        self.menu = []
 
         self.sheetsDir.loadedSheets.itemDoubleClicked.connect(self.loadSheet)
         self.sheetsDir.saveButton.clicked.connect(self.save)
 
         layout.addWidget(self.sheetsDir, 0, 0, 5, 2)
-        layout.addWidget(self.tabs, 0, 2, 3, 7)
-        layout.addWidget(self.graph, 3, 2, 2, 7)
+        layout.addWidget(self.tabs, 0, 2, 5, 7)
 
         self.tabs.tabBarDoubleClicked.connect(self.del_tab)
 
@@ -46,8 +47,15 @@ class MainWindow(QMainWindow):
 
     def add_tab(self, widget: QWidget, name):
         tab = QWidget()
-        tab.setLayout(QGridLayout())
-        tab.layout().addWidget(widget)
+        layout = QGridLayout()
+        tab.setLayout(layout)
+
+        layout.addWidget(widget, 0, 0)
+
+        m = GraphMenu()
+        m.create.clicked.connect(self.create_graph)
+        layout.addWidget(m, 1, 0)
+        self.menu.append(m)
         self.tabs.addTab(tab, name)
 
     def del_tab(self):
@@ -67,7 +75,11 @@ class MainWindow(QMainWindow):
         df_model = self.create_dataframe_model(df)
         self.add_tab(df_model, file.text())
 
-        self.create_graph(df, "Precipitation")
+        tab_index = self.tabs.currentIndex()
+        df_cols = list(df.columns)
+
+        for col in df_cols:
+            self.menu[tab_index].column.addItem(col)
 
     def create_dataframe_model(self, df: DataframeObject):
         model = PandasModel(df)
@@ -77,10 +89,25 @@ class MainWindow(QMainWindow):
 
         return view
 
-    def create_graph(self, df: DataframeObject, col):
-        self.graph = GraphWindow()
+    def create_graph(self):
+        tab_index = self.tabs.currentIndex()
+        self.graph = GraphModel()
+        layout = QVBoxLayout()
+        selected_col = self.menu[tab_index].column.currentText()
 
-        self.graph.show()
+        if selected_col != "Select Column":
+
+            selected_graph = self.menu[tab_index].graph_type.currentText()
+            if selected_graph == "Line":
+                self.graph.axes.plot(self.data[tab_index][selected_col])
+            elif selected_graph == "Bar":
+                # self.graph.axes.bar(self.data[tab_index][selected_col])
+                print("Help with bar graphs lol")
+            else:
+                return
+
+            layout.addWidget(self.graph)
+            self.graph.show()
 
     def changedData(self, item):
         print(item.row())
