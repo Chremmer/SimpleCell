@@ -156,7 +156,7 @@ class MainWindow(QMainWindow):
         if selected_graph == "Line":
             w.setWindowTitle("Line Graph [" + selected_col1 + "]")
         elif selected_graph == "Bar":
-            w.setWindowTitle("Bar Graph [" + selected_col1 + "," + selected_col2 + "]")
+            w.setWindowTitle("Bar Graph [" + selected_col1 + ", " + selected_col2 + "]")
 
         save.clicked.connect(self.save_graph)
 
