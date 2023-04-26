@@ -138,6 +138,7 @@ class MainWindow(QMainWindow):
 
         w = QWidget()
         w.setLayout(layout)
+        w.setMinimumSize(w.size())
         if selected_graph == "Line":
             w.setWindowTitle("Line Graph [" + selected_col1 + "]  |  " + self.tabs.tabText(tab_index))
         elif selected_graph == "Bar":
