@@ -153,7 +153,6 @@ class MainWindow(QMainWindow):
 
         w = QWidget()
         w.setLayout(layout)
-        w.setMinimumSize(w.size())
         w.setWindowIcon(QtGui.QIcon('logo.jpg'))
         if selected_graph == "Line":
             w.setWindowTitle("Line Graph [" + selected_col1 + "]")
@@ -164,6 +163,7 @@ class MainWindow(QMainWindow):
 
         self.graph_window.append(w)
         self.graph_window[len(self.graph_window) - 1].show()
+        self.graph_window[len(self.graph_window) - 1].setMinimumSize(w.size())
 
     def save_graph(self):
         graph = self.graph_window[len(self.graph_window) - 1].findChild(GraphModel)
