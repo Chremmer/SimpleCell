@@ -1,10 +1,8 @@
 import pandas
 import pandas as pd
+from PyQt5 import QtGui
 from PyQt5.QtCore import QAbstractTableModel, Qt
 from PyQt5.QtWidgets import *
-from PyQt5.uic.properties import QtCore
-from openpyxl.styles import Alignment
-from openpyxl.utils import dataframe
 from pandas import DataFrame as DataframeObject
 import matplotlib.pyplot as plt
 import Dataframe
@@ -13,6 +11,7 @@ from GraphModel import GraphModel
 from LoadedSheets import LoadedSheets
 from PandasModel import PandasModel
 import sys
+import os
 
 from openpyxl import *
 
@@ -48,6 +47,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Simple Cell")
         self.setMinimumSize(1067, 600)
+        self.setWindowIcon(QtGui.QIcon('logo.jpg'))
         self.show()
 
     def add_tab(self, widget: QWidget, name):
@@ -153,6 +153,8 @@ class MainWindow(QMainWindow):
 
         w = QWidget()
         w.setLayout(layout)
+        w.setMinimumSize(w.size())
+        w.setWindowIcon(QtGui.QIcon('logo.jpg'))
         if selected_graph == "Line":
             w.setWindowTitle("Line Graph [" + selected_col1 + "]")
         elif selected_graph == "Bar":
@@ -162,7 +164,6 @@ class MainWindow(QMainWindow):
 
         self.graph_window.append(w)
         self.graph_window[len(self.graph_window) - 1].show()
-        w.setMinimumSize(w.size())
 
     def save_graph(self):
         graph = self.graph_window[len(self.graph_window) - 1].findChild(GraphModel)
@@ -190,6 +191,7 @@ class MainWindow(QMainWindow):
         w.setLayout(layout)
         w.setWindowTitle("Graph Error")
         w.setFixedSize(300, 100)
+        w.setWindowIcon(QtGui.QIcon('logo.jpg'))
 
         self.graph_window.append(w)
         self.graph_window[len(self.graph_window) - 1].show()
