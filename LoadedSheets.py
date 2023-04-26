@@ -19,7 +19,7 @@ class LoadedSheets(QWidget):
 
         self.path = list()
         self.loadButton = QPushButton("Load")
-        self.delButton = QPushButton("Del")
+        self.delButton = QPushButton("Delete")
         self.loadedSheets = QListWidget(self)
         self.saveButton = QPushButton("Save")
 

@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
     sheetsDir: LoadedSheets
     tabs: QTabWidget
     graph: GraphModel
+    graph_window: list[QWidget]
     data: list[DataframeObject]
     menu: list[GraphMenu]
 
@@ -34,6 +35,7 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget(self)
         self.data = []
         self.menu = []
+        self.graph_window = []
 
         self.sheetsDir.loadedSheets.itemDoubleClicked.connect(self.loadSheet)
         self.sheetsDir.saveButton.clicked.connect(self.save)
@@ -43,6 +45,8 @@ class MainWindow(QMainWindow):
 
         self.tabs.tabBarDoubleClicked.connect(self.del_tab)
 
+        self.setWindowTitle("Simple Cell")
+        self.setMinimumSize(1067, 600)
         self.show()
 
     def add_tab(self, widget: QWidget, name):
@@ -58,6 +62,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(m, 1, 0)
         self.menu.append(m)
         self.tabs.addTab(tab, name)
+        self.tabs.setCurrentIndex(len(self.tabs) - 1)
 
     def del_tab(self):
         if len(self.data) > 0:
@@ -115,16 +120,32 @@ class MainWindow(QMainWindow):
         selected_col2 = self.menu[tab_index].column2.currentText()
 
         if selected_graph == "Line" and selected_col1 != "Select Column 1":
-            self.graph.axes.plot(self.data[tab_index][selected_col1])
+            try:
+                self.graph.axes.plot(self.data[tab_index][selected_col1])
+            except Exception:
+                return
 
-        elif selected_graph == "Bar" and selected_col1 != "Select Column 1" and\
+        elif selected_graph == "Bar" and selected_col1 != "Select Column 1" and \
                 selected_col2 != "Select Column 2":
-            self.graph.axes.bar(self.data[tab_index][selected_col1], self.data[tab_index][selected_col2])
+            try:
+                self.graph.axes.bar(self.data[tab_index][selected_col1], self.data[tab_index][selected_col2])
+            except Exception:
+                return
         else:
             return
 
         layout.addWidget(self.graph)
-        self.graph.show()
+
+        w = QWidget()
+        w.setLayout(layout)
+        if selected_graph == "Line":
+            w.setWindowTitle("Line Graph [" + selected_col1 + "]  |  " + self.tabs.tabText(tab_index))
+        elif selected_graph == "Bar":
+            w.setWindowTitle("Bar Graph [" + selected_col1 + ", " + selected_col2 + "]  |  " \
+                             + self.tabs.tabText(tab_index))
+        self.graph_window.append(w)
+
+        self.graph_window[len(self.graph_window) - 1].show()
 
     def set_combobox(self):
         tab_index = self.tabs.currentIndex()
@@ -160,9 +181,6 @@ class MainWindow(QMainWindow):
             finally:
                 self.data[tab_index].to_excel(writer, sheet_name=sheet, index=False)
                 writer.save()
-
-
-
 
 
 if __name__ == "__main__":
