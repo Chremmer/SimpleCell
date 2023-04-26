@@ -1,9 +1,11 @@
-from PyQt5.QtWidgets import QWidget, QPushButton, QGridLayout, QComboBox
+from PyQt5.QtWidgets import QWidget, QPushButton, QGridLayout, QComboBox, QLabel
 
 
 class GraphMenu(QWidget):
+    label: QLabel
     graph_type: QComboBox
-    column: QComboBox
+    column1: QComboBox
+    column2: QComboBox
     create: QPushButton
 
     def __init__(self, parent=None):
@@ -11,21 +13,32 @@ class GraphMenu(QWidget):
         layout = QGridLayout()
         self.setLayout(layout)
 
+        self.label = QLabel("Graph Options\n")
+
         self.graph_type = QComboBox()
         self.graph_type.addItem("Select Graph Type")
         self.graph_type.addItem("Line")
         self.graph_type.addItem("Bar")
 
-        self.column = QComboBox()
-        self.column.addItem("Select Column")
+        self.column1 = QComboBox()
+        self.column1.addItem("Select Column 1")
+        self.column1.setEnabled(False)
+
+        self.column2 = QComboBox()
+        self.column2.addItem("Select Column 2")
+        self.column2.setEnabled(False)
 
         self.create = QPushButton("Create")
 
+        self.label.setMinimumWidth(1)
         self.graph_type.setMinimumWidth(1)
-        self.column.setMinimumWidth(1)
+        self.column1.setMinimumWidth(1)
+        self.column2.setMinimumWidth(1)
         self.create.setMinimumWidth(1)
 
-        layout.addWidget(self.graph_type, 0, 0)
-        layout.addWidget(self.column, 0, 1)
-        layout.addWidget(self.create, 0, 2)
+        layout.addWidget(self.label, 0, 0)
+        layout.addWidget(self.graph_type, 1, 0)
+        layout.addWidget(self.column1, 1, 1)
+        layout.addWidget(self.column2, 1, 2)
+        layout.addWidget(self.create, 1, 3)
 

@@ -53,33 +53,50 @@ class MainWindow(QMainWindow):
         layout.addWidget(widget, 0, 0)
 
         m = GraphMenu()
+        m.graph_type.currentIndexChanged.connect(self.set_combobox)
         m.create.clicked.connect(self.create_graph)
         layout.addWidget(m, 1, 0)
         self.menu.append(m)
         self.tabs.addTab(tab, name)
 
     def del_tab(self):
-        if(len(self.data) > 0):
+        if len(self.data) > 0:
             tab_index = self.tabs.currentIndex()
             self.tabs.removeTab(tab_index)
-
-            self.data.pop(tab_index)
+            del self.menu[tab_index]
+            del self.data[tab_index]
 
     def loadSheet(self, file: QListWidgetItem):
-        excel_sheet_path = self.sheetsDir.getPath(file)
-        sheet = excel_sheet_path[excel_sheet_path.rfind(" - ") + 3:]
-        path = excel_sheet_path[:excel_sheet_path.rfind(" - ")]
 
-        df = Dataframe.excel_to_dataframe(path, sheet)
-        self.data.append(df)
-        df_model = self.create_dataframe_model(df)
-        self.add_tab(df_model, file.text())
+        if not self.tab_exists(file.text()):
+            excel_sheet_path = self.sheetsDir.getPath(file)
+            sheet = excel_sheet_path[excel_sheet_path.rfind(" - ") + 3:]
+            path = excel_sheet_path[:excel_sheet_path.rfind(" - ")]
 
-        tab_index = self.tabs.currentIndex()
-        df_cols = list(df.columns)
+            df = Dataframe.excel_to_dataframe(path, sheet)
+            self.data.append(df)
+            df_model = self.create_dataframe_model(df)
+            self.add_tab(df_model, file.text())
 
-        for col in df_cols:
-            self.menu[tab_index].column.addItem(col)
+            df_cols = list(df.columns)
+
+            for col in df_cols:
+                self.menu[len(self.menu) - 1].column1.addItem(col)
+                self.menu[len(self.menu) - 1].column2.addItem(col)
+        else:
+            return
+
+    def tab_exists(self, name):
+        tab_count = self.tabs.count()
+
+        if tab_count > 0:
+            for tab in range(0, self.tabs.count()):
+                if self.tabs.tabText(tab) == name:
+                    return True
+
+            return False
+        else:
+            return False
 
     def create_dataframe_model(self, df: DataframeObject):
         model = PandasModel(df)
@@ -93,21 +110,35 @@ class MainWindow(QMainWindow):
         tab_index = self.tabs.currentIndex()
         self.graph = GraphModel()
         layout = QVBoxLayout()
-        selected_col = self.menu[tab_index].column.currentText()
+        selected_graph = self.menu[tab_index].graph_type.currentText()
+        selected_col1 = self.menu[tab_index].column1.currentText()
+        selected_col2 = self.menu[tab_index].column2.currentText()
 
-        if selected_col != "Select Column":
+        if selected_graph == "Line" and selected_col1 != "Select Column 1":
+            self.graph.axes.plot(self.data[tab_index][selected_col1])
 
-            selected_graph = self.menu[tab_index].graph_type.currentText()
-            if selected_graph == "Line":
-                self.graph.axes.plot(self.data[tab_index][selected_col])
-            elif selected_graph == "Bar":
-                # self.graph.axes.bar(self.data[tab_index][selected_col])
-                print("Help with bar graphs lol")
-            else:
-                return
+        elif selected_graph == "Bar" and selected_col1 != "Select Column 1" and\
+                selected_col2 != "Select Column 2":
+            self.graph.axes.bar(self.data[tab_index][selected_col1], self.data[tab_index][selected_col2])
+        else:
+            return
 
-            layout.addWidget(self.graph)
-            self.graph.show()
+        layout.addWidget(self.graph)
+        self.graph.show()
+
+    def set_combobox(self):
+        tab_index = self.tabs.currentIndex()
+        selected = self.menu[tab_index].graph_type.currentText()
+
+        if selected == "Line":
+            self.menu[tab_index].column1.setEnabled(True)
+            self.menu[tab_index].column2.setEnabled(False)
+        elif selected == "Bar":
+            self.menu[tab_index].column1.setEnabled(True)
+            self.menu[tab_index].column2.setEnabled(True)
+        else:
+            self.menu[tab_index].column1.setEnabled(False)
+            self.menu[tab_index].column2.setEnabled(False)
 
     def changedData(self, item):
         print(item.row())
