@@ -2,6 +2,8 @@ import pandas
 import pandas as pd
 from PyQt5.QtCore import QAbstractTableModel, Qt
 from PyQt5.QtWidgets import *
+from PyQt5.uic.properties import QtCore
+from openpyxl.styles import Alignment
 from openpyxl.utils import dataframe
 from pandas import DataFrame as DataframeObject
 import matplotlib.pyplot as plt
@@ -18,7 +20,6 @@ from openpyxl import *
 class MainWindow(QMainWindow):
     sheetsDir: LoadedSheets
     tabs: QTabWidget
-    graph: GraphModel
     graph_window: list[QWidget]
     data: list[DataframeObject]
     menu: list[GraphMenu]
@@ -113,39 +114,84 @@ class MainWindow(QMainWindow):
 
     def create_graph(self):
         tab_index = self.tabs.currentIndex()
-        self.graph = GraphModel()
-        layout = QVBoxLayout()
+        graph = GraphModel()
         selected_graph = self.menu[tab_index].graph_type.currentText()
         selected_col1 = self.menu[tab_index].column1.currentText()
         selected_col2 = self.menu[tab_index].column2.currentText()
 
         if selected_graph == "Line" and selected_col1 != "Select Column 1":
             try:
-                self.graph.axes.plot(self.data[tab_index][selected_col1])
+                graph.axes.plot(self.data[tab_index][selected_col1])
+                self.create_graph_window(graph)
             except Exception:
+                self.error_window()
                 return
 
         elif selected_graph == "Bar" and selected_col1 != "Select Column 1" and \
                 selected_col2 != "Select Column 2":
             try:
-                self.graph.axes.bar(self.data[tab_index][selected_col1], self.data[tab_index][selected_col2])
+                graph.axes.bar(self.data[tab_index][selected_col1], self.data[tab_index][selected_col2])
+                self.create_graph_window(graph)
             except Exception:
+                self.error_window()
                 return
         else:
             return
 
-        layout.addWidget(self.graph)
+    def create_graph_window(self, graph):
+
+        save = QPushButton("Save as PNG")
+
+        layout = QGridLayout()
+        layout.addWidget(save, 0, 0)
+        layout.addWidget(graph, 1, 0)
+
+        tab_index = self.tabs.currentIndex()
+        selected_graph = self.menu[tab_index].graph_type.currentText()
+        selected_col1 = self.menu[tab_index].column1.currentText()
+        selected_col2 = self.menu[tab_index].column2.currentText()
 
         w = QWidget()
         w.setLayout(layout)
-        w.setMinimumSize(w.size())
         if selected_graph == "Line":
-            w.setWindowTitle("Line Graph [" + selected_col1 + "]  |  " + self.tabs.tabText(tab_index))
+            w.setWindowTitle("Line Graph [" + selected_col1 + "]")
         elif selected_graph == "Bar":
-            w.setWindowTitle("Bar Graph [" + selected_col1 + ", " + selected_col2 + "]  |  " \
-                             + self.tabs.tabText(tab_index))
-        self.graph_window.append(w)
+            w.setWindowTitle("Bar Graph [" + selected_col1 + "," + selected_col2 + "]")
 
+        save.clicked.connect(self.save_graph)
+
+        self.graph_window.append(w)
+        self.graph_window[len(self.graph_window) - 1].show()
+        w.setMinimumSize(w.size())
+
+    def save_graph(self):
+        graph = self.graph_window[len(self.graph_window) - 1].findChild(GraphModel)
+        file_name = self.graph_window[len(self.graph_window) - 1].windowTitle()
+
+        tab_index = self.tabs.currentIndex()
+        tab_title = self.tabs.tabText(tab_index)
+        path = self.sheetsDir.getPath(fileName=tab_title)
+
+        last_char = path[-1]
+        while last_char != "/":
+            path = path[:-1]
+            last_char = path[-1]
+
+        graph.axes.figure.savefig(path + file_name + ".png")
+
+    def error_window(self):
+        error = QLabel("Graph Error: Unable to create graph\n\nCheck for bad data")
+        error.setAlignment(Qt.AlignCenter)
+
+        layout = QVBoxLayout()
+        layout.addWidget(error)
+
+        w = QWidget()
+        w.setLayout(layout)
+        w.setWindowTitle("Graph Error")
+        w.setFixedSize(300, 100)
+
+        self.graph_window.append(w)
         self.graph_window[len(self.graph_window) - 1].show()
 
     def set_combobox(self):
