@@ -216,20 +216,22 @@ class MainWindow(QMainWindow):
 
     def save(self):
         tab_index = self.tabs.currentIndex()
-        tab_title = self.tabs.tabText(tab_index)
-        path = self.sheetsDir.getPath(fileName=tab_title)
-        filename = path[:path.rfind(" - ")]
-        sheet = tab_title[tab_title.rfind(" - ") + 3:]
 
-        with pd.ExcelWriter(filename, engine='openpyxl', mode='a') as writer:
-            workBook = writer.book
-            try:
-                workBook.remove(workBook[sheet])
-            except:
-                print("Worksheet does not exist")
-            finally:
-                self.data[tab_index].to_excel(writer, sheet_name=sheet, index=False)
-                writer.save()
+        if tab_index >= 0:
+            tab_title = self.tabs.tabText(tab_index)
+            path = self.sheetsDir.getPath(fileName=tab_title)
+            filename = path[:path.rfind(" - ")]
+            sheet = tab_title[tab_title.rfind(" - ") + 3:]
+
+            with pd.ExcelWriter(filename, engine='openpyxl', mode='a') as writer:
+                workBook = writer.book
+                try:
+                    workBook.remove(workBook[sheet])
+                except:
+                    print("Worksheet does not exist")
+                finally:
+                    self.data[tab_index].to_excel(writer, sheet_name=sheet, index=False)
+                    writer.save()
 
 
 if __name__ == "__main__":
