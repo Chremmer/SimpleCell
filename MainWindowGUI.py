@@ -265,7 +265,6 @@ class MainWindow(QMainWindow):
                     print("Worksheet does not exist")
                 finally:
                     self.data[tab_index].to_excel(writer, sheet_name=sheet, index=False)
-                    writer.save()
 
 
 if __name__ == "__main__":
