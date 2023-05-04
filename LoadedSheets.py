@@ -1,11 +1,12 @@
-from PyQt5.QtCore import QChildEvent, QEvent
 from PyQt5.QtWidgets import *
 
 import openpyxl
 
 
+# Widget for loaded sheets pane
 class LoadedSheets(QWidget):
 
+    # Button and list widget setup
     loadButton: QPushButton
     delButton: QPushButton
     newButton: QPushButton
@@ -14,6 +15,7 @@ class LoadedSheets(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        # Initialize GUI componenets
         layout = QGridLayout()
         self.setLayout(layout)
 
@@ -37,7 +39,7 @@ class LoadedSheets(QWidget):
 
         layout.addWidget(self.loadedSheets, 1, 0, 5, 3)
 
-
+    # Set width
     def setButtonWidth(self):
         width = self.width()
 
@@ -45,17 +47,19 @@ class LoadedSheets(QWidget):
         self.delButton.setMaximumWidth(width // 3)
         self.saveButton.setMaximumWidth(width // 3)
 
-
+    # Resize buttons
     def resizeEvent(self, event):
         self.setButtonWidth()
 
     def loadSheets(self, fileName : QListWidgetItem):
         pass
 
+    # Remove item from list widget
     def removeItem(self):
         selected = self.loadedSheets.selectedItems()
 
         remove = list()
+        # Remove selected item when delete is clicked
         for item in selected:
             remove.append(self.loadedSheets.indexFromItem(item).row())
             self.loadedSheets.takeItem(self.loadedSheets.indexFromItem(item).row())
@@ -63,6 +67,7 @@ class LoadedSheets(QWidget):
         for num in reversed(remove):
             self.path.pop(num)
 
+    # Get path of file
     def getPath(self, listItem: QListWidgetItem = None, fileName: str = None) -> str:
         if(listItem != None):
             return self.path[self.loadedSheets.indexFromItem(listItem).row()]
@@ -73,7 +78,7 @@ class LoadedSheets(QWidget):
 
         return ""
 
-
+    # Load an Excel workbook after file is selected
     def loadWorkBook(self):
         fileDir = self.getOpenFilesAndDirs()
 

@@ -1,7 +1,9 @@
 from PyQt5.QtWidgets import QWidget, QPushButton, QGridLayout, QComboBox, QLabel
 
 
+# Create graph menu widget
 class GraphMenu(QWidget):
+    # Setup buttons and combo boxes
     label: QLabel
     graph_type: QComboBox
     column1: QComboBox
@@ -10,6 +12,7 @@ class GraphMenu(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        # Initialize GUI components
         layout = QGridLayout()
         self.setLayout(layout)
 
@@ -36,6 +39,7 @@ class GraphMenu(QWidget):
         self.column2.setMinimumWidth(1)
         self.create.setMinimumWidth(1)
 
+        # Add widgets to grid layout
         layout.addWidget(self.label, 0, 0)
         layout.addWidget(self.graph_type, 1, 0)
         layout.addWidget(self.column1, 1, 1)

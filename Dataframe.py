@@ -4,6 +4,7 @@ from PandasModel import PandasModel
 from pandas import DataFrame as DataframeObject
 
 
+# Convert excel file to dataframe
 def excel_to_dataframe(file, sheetName):
 
     data = None
@@ -17,20 +18,13 @@ def excel_to_dataframe(file, sheetName):
     return data
 
 
+# Convert dataframe to excel file
 def dataframe_to_excel(data, file, index=False):
     try:
         data.to_excel(file, index=index)
 
     except Exception as e:
         print("Dataframe to excel error: " + str(e))
-
-
-
-
-
-def test():
-    print("thing")
-
 
 
 def empty_df():
