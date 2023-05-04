@@ -84,15 +84,19 @@ class LoadedSheets(QWidget):
 
         if(fileDir != None):
             for file in fileDir:
-                fileType = file[file.rindex('.'):]
+                try:
+                    fileType = file[file.rindex('.'):]
 
-                if(fileType == '.xlsx'):
-                    workbook = openpyxl.load_workbook(filename=file)
-                    sheets = workbook.sheetnames
+                    if(fileType == '.xlsx'):
+                        workbook = openpyxl.load_workbook(filename=file)
+                        sheets = workbook.sheetnames
 
-                    for sheet in sheets:
-                        self.path.append(file + " - " + sheet)
-                        self.loadedSheets.addItem(QListWidgetItem(file[file.rindex('/') + 1:] + " - " + sheet))
+                        for sheet in sheets:
+                            self.path.append(file + " - " + sheet)
+                            self.loadedSheets.addItem(QListWidgetItem(file[file.rindex('/') + 1:] + " - " + sheet))
+
+                except:
+                    pass
 
 
     """
